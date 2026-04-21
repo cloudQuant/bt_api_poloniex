@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bt_api_poloniex"
+version = "0.1.0"
+description = "Poloniex exchange plugin for bt_api"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["bt_api_base>=0.1.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bt_api_poloniex"]
