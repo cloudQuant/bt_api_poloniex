@@ -9,7 +9,8 @@ from bt_api_poloniex.registry_registration import register_poloniex
 
 
 def register_plugin(
-    registry: type[ExchangeRegistry], runtime_factory: type[GatewayRuntimeRegistrar]
+    registry: type[ExchangeRegistry],
+    runtime_factory: type[GatewayRuntimeRegistrar],
 ) -> PluginInfo:
     register_poloniex(registry)
 

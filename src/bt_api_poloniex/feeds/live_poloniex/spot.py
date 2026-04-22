@@ -5,10 +5,10 @@ from typing import Any
 from bt_api_base.functions.utils import update_extra_data
 from bt_api_base.logging_factory import get_logger
 
-from bt_api_poloniex.feeds.live_poloniex import PoloniexRequestData
-from bt_api_poloniex.tickers import PoloniexRequestTickerData, PoloniexWssTickerData
 from bt_api_poloniex.containers.balances import PoloniexRequestBalanceData
 from bt_api_poloniex.containers.orders import PoloniexRequestOrderData
+from bt_api_poloniex.feeds.live_poloniex import PoloniexRequestData
+from bt_api_poloniex.tickers import PoloniexRequestTickerData
 
 
 class PoloniexRequestDataSpot(PoloniexRequestData):
@@ -41,8 +41,11 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
             ticker_data = input_data.get("data") or input_data
             return [
                 PoloniexRequestTickerData(
-                    ticker_data, extra_data["symbol_name"], extra_data["asset_type"], True
-                )
+                    ticker_data,
+                    extra_data["symbol_name"],
+                    extra_data["asset_type"],
+                    True,
+                ),
             ], True
         return [], False
 
@@ -53,14 +56,14 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
     def get_tick(self, symbol, extra_data=None, **kwargs) -> Any:
         return self.get_ticker(symbol, extra_data=extra_data, **kwargs)
 
-    def async_get_ticker(self, symbol, extra_data=None, **kwargs):
+    def async_get_ticker(self, symbol, extra_data=None, **kwargs) -> None:
         path, params, extra_data = self._get_ticker(symbol, extra_data, **kwargs)
         self.submit(
             self.async_request(path, params=params, extra_data=extra_data),
             callback=self.async_callback,
         )
 
-    def async_get_tick(self, symbol, extra_data=None, **kwargs):
+    def async_get_tick(self, symbol, extra_data=None, **kwargs) -> None:
         self.async_get_ticker(symbol, extra_data=extra_data, **kwargs)
 
     def _get_balance(self, extra_data=None, **kwargs) -> Any:
@@ -94,7 +97,7 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
     def get_account(self, symbol=None, extra_data=None, **kwargs) -> Any:
         return self.get_balance(extra_data=extra_data, **kwargs)
 
-    def async_get_balance(self, extra_data=None, **kwargs):
+    def async_get_balance(self, extra_data=None, **kwargs) -> None:
         path, params, extra_data = self._get_balance(extra_data, **kwargs)
         self.submit(
             self.async_request(path, params=params, extra_data=extra_data),
@@ -142,8 +145,11 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
             data = input_data.get("data", {})
             return [
                 PoloniexRequestOrderData(
-                    data, extra_data["symbol_name"], extra_data["asset_type"], True
-                )
+                    data,
+                    extra_data["symbol_name"],
+                    extra_data["asset_type"],
+                    True,
+                ),
             ], True
         return [], False
 
@@ -158,7 +164,13 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
         **kwargs,
     ):
         path, body, extra_data = self._make_order(
-            symbol, vol, price, order_type, client_order_id, extra_data, **kwargs
+            symbol,
+            vol,
+            price,
+            order_type,
+            client_order_id,
+            extra_data,
+            **kwargs,
         )
         return self.request(path, body=body, extra_data=extra_data)
 
@@ -171,16 +183,28 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
         client_order_id=None,
         extra_data=None,
         **kwargs,
-    ):
+    ) -> None:
         path, body, extra_data = self._make_order(
-            symbol, vol, price, order_type, client_order_id, extra_data, **kwargs
+            symbol,
+            vol,
+            price,
+            order_type,
+            client_order_id,
+            extra_data,
+            **kwargs,
         )
         self.submit(
-            self.async_request(path, body=body, extra_data=extra_data), callback=self.async_callback
+            self.async_request(path, body=body, extra_data=extra_data),
+            callback=self.async_callback,
         )
 
     def _cancel_order(
-        self, symbol, order_id=None, client_order_id=None, extra_data=None, **kwargs
+        self,
+        symbol,
+        order_id=None,
+        client_order_id=None,
+        extra_data=None,
+        **kwargs,
     ) -> Any:
         path = f"/orders/{order_id or client_order_id}"
         extra_data = update_extra_data(
@@ -196,12 +220,21 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
 
     def cancel_order(self, symbol, order_id=None, client_order_id=None, extra_data=None, **kwargs):
         path, params, extra_data = self._cancel_order(
-            symbol, order_id, client_order_id, extra_data, **kwargs
+            symbol,
+            order_id,
+            client_order_id,
+            extra_data,
+            **kwargs,
         )
         return self.request(path, params=params, extra_data=extra_data)
 
     def _query_order(
-        self, symbol, order_id=None, client_order_id=None, extra_data=None, **kwargs
+        self,
+        symbol,
+        order_id=None,
+        client_order_id=None,
+        extra_data=None,
+        **kwargs,
     ) -> Any:
         path = f"/orders/{order_id or client_order_id}"
         extra_data = update_extra_data(
@@ -223,14 +256,21 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
             data = input_data.get("data", {})
             return [
                 PoloniexRequestOrderData(
-                    data, extra_data["symbol_name"], extra_data["asset_type"], True
-                )
+                    data,
+                    extra_data["symbol_name"],
+                    extra_data["asset_type"],
+                    True,
+                ),
             ], True
         return [], False
 
     def query_order(self, symbol, order_id=None, client_order_id=None, extra_data=None, **kwargs):
         path, params, extra_data = self._query_order(
-            symbol, order_id, client_order_id, extra_data, **kwargs
+            symbol,
+            order_id,
+            client_order_id,
+            extra_data,
+            **kwargs,
         )
         return self.request(path, params=params, extra_data=extra_data)
 
@@ -253,7 +293,7 @@ class PoloniexRequestDataSpot(PoloniexRequestData):
         path, params, extra_data = self._get_kline(symbol, period, limit, extra_data, **kwargs)
         return self.request(path, params=params, extra_data=extra_data)
 
-    def async_get_kline(self, symbol, period="1m", limit=100, extra_data=None, **kwargs):
+    def async_get_kline(self, symbol, period="1m", limit=100, extra_data=None, **kwargs) -> None:
         path, params, extra_data = self._get_kline(symbol, period, limit, extra_data, **kwargs)
         self.submit(
             self.async_request(path, params=params, extra_data=extra_data),

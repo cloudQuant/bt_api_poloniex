@@ -53,7 +53,8 @@ class PoloniexExchangeData(ExchangeData):
     def get_rest_path(self, request_type: str, **kwargs) -> str:
         path = self.rest_paths.get(request_type)
         if path is None:
-            raise ValueError(f"Unknown rest path: {request_type}")
+            msg = f"Unknown rest path: {request_type}"
+            raise ValueError(msg)
         return path
 
 

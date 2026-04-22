@@ -12,10 +12,10 @@ from bt_api_base.feeds.feed import Feed
 from bt_api_base.logging_factory import get_logger
 from bt_api_base.rate_limiter import RateLimiter, RateLimitRule
 
-from bt_api_poloniex.exchange_data import PoloniexExchangeDataSpot
-from bt_api_poloniex.tickers import PoloniexRequestTickerData, PoloniexWssTickerData
 from bt_api_poloniex.containers.balances import PoloniexRequestBalanceData
 from bt_api_poloniex.containers.orders import PoloniexRequestOrderData
+from bt_api_poloniex.exchange_data import PoloniexExchangeDataSpot
+from bt_api_poloniex.tickers import PoloniexRequestTickerData, PoloniexWssTickerData
 
 
 class PoloniexRequestData(Feed, RequestData):
@@ -55,12 +55,20 @@ class PoloniexRequestData(Feed, RequestData):
         return RateLimiter(
             rules=[
                 RateLimitRule(
-                    name="poloniex_public", type="request_count", interval=1, limit=200, scope="ip"
+                    name="poloniex_public",
+                    type="request_count",
+                    interval=1,
+                    limit=200,
+                    scope="ip",
                 ),
                 RateLimitRule(
-                    name="poloniex_private", type="request_count", interval=1, limit=50, scope="ip"
+                    name="poloniex_private",
+                    type="request_count",
+                    interval=1,
+                    limit=50,
+                    scope="ip",
                 ),
-            ]
+            ],
         )
 
     def _generate_signature(self, timestamp: str, method: str, path: str, body: str = "") -> str:
@@ -68,7 +76,9 @@ class PoloniexRequestData(Feed, RequestData):
             return ""
         sign_str = f"{timestamp}{method}{path}{body}"
         signature = hmac.new(
-            self.private_key.encode(), sign_str.encode(), hashlib.sha256
+            self.private_key.encode(),
+            sign_str.encode(),
+            hashlib.sha256,
         ).hexdigest()
         return signature
 

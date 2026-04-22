@@ -34,7 +34,7 @@ class PoloniexTickerData(TickerData):
         self.all_data: dict[str, Any] | None = None
         self.has_been_init_data = False
 
-    def init_data(self) -> "PoloniexTickerData":
+    def init_data(self) -> PoloniexTickerData:
         raise NotImplementedError
 
     def get_all_data(self) -> dict[str, Any]:
@@ -98,7 +98,7 @@ class PoloniexTickerData(TickerData):
 
 
 class PoloniexRequestTickerData(PoloniexTickerData):
-    def init_data(self) -> "PoloniexRequestTickerData":
+    def init_data(self) -> PoloniexRequestTickerData:
         if not self.has_been_json_encoded:
             self.ticker_data = (
                 json.loads(self.ticker_info)
@@ -122,7 +122,7 @@ class PoloniexRequestTickerData(PoloniexTickerData):
 
 
 class PoloniexWssTickerData(PoloniexTickerData):
-    def init_data(self) -> "PoloniexWssTickerData":
+    def init_data(self) -> PoloniexWssTickerData:
         if not self.has_been_json_encoded:
             self.ticker_data = (
                 json.loads(self.ticker_info)

@@ -169,7 +169,8 @@ class PoloniexWssOrderData(PoloniexOrderData):
 
         assert self.order_data is not None
         self.order_id = from_dict_get_string(self.order_data, "orderId") or from_dict_get_string(
-            self.order_data, "id"
+            self.order_data,
+            "id",
         )
         self.client_order_id = from_dict_get_string(self.order_data, "clientOrderId")
         self.symbol = from_dict_get_string(self.order_data, "symbol")
@@ -177,19 +178,23 @@ class PoloniexWssOrderData(PoloniexOrderData):
         self.order_type = from_dict_get_string(self.order_data, "type")
         self.order_price = from_dict_get_float(self.order_data, "price")
         self.order_qty = from_dict_get_float(self.order_data, "qty") or from_dict_get_float(
-            self.order_data, "quantity"
+            self.order_data,
+            "quantity",
         )
         self.order_filled_qty = from_dict_get_float(
-            self.order_data, "filledQty"
+            self.order_data,
+            "filledQty",
         ) or from_dict_get_float(self.order_data, "accumulatedQty")
         self.order_avg_price = from_dict_get_float(self.order_data, "avgPrice")
         self.order_time = from_dict_get_int(self.order_data, "time") or from_dict_get_int(
-            self.order_data, "createTime"
+            self.order_data,
+            "createTime",
         )
         self.update_time = from_dict_get_int(self.order_data, "updateTime") or self.order_time
 
         status_str = from_dict_get_string(self.order_data, "orderStatus") or from_dict_get_string(
-            self.order_data, "state"
+            self.order_data,
+            "state",
         )
         status_map = {
             "NEW": OrderStatus.LIVE,

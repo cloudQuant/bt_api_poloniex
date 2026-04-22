@@ -119,7 +119,8 @@ class PoloniexWssBalanceData(PoloniexBalanceData):
         self.currency = from_dict_get_string(self.balance_data, "currency")
         self.available_balance = from_dict_get_float(self.balance_data, "available")
         self.locked_balance = from_dict_get_float(
-            self.balance_data, "locked"
+            self.balance_data,
+            "locked",
         ) or from_dict_get_float(self.balance_data, "hold")
         av = self.available_balance
         lk = self.locked_balance
