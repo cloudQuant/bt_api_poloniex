@@ -101,35 +101,69 @@ class PoloniexRequestData(Feed, RequestData):
             return input_data, True
         return [], False
 
-    def request(self, path, params=None, body=None, extra_data=None, timeout=10):
-        if params is None:
-            params = {}
-        headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
-        url = f"{self._params.rest_url}{path}"
+    def http_request(self, method, url, headers=None, body=None, timeout=10):
         return self._http_client.request(
-            "GET" if body is None else "POST",
+            method,
             url,
-            params=params,
-            json=body,
             headers=headers,
+            json_data=body,
             timeout=timeout,
             rate_limiter=self._rate_limiter,
         )
 
-    def async_request(self, path, params=None, body=None, extra_data=None, timeout=10):
-        if params is None:
-            params = {}
-        headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
-        url = f"{self._params.rest_url}{path}"
-        return self._http_client.async_request(
-            "GET" if body is None else "POST",
+    async def async_http_request(self, method, url, headers=None, body=None, timeout=10):
+        return await self._http_client.async_request(
+            method,
             url,
-            params=params,
-            json=body,
             headers=headers,
+            json_data=body,
             timeout=timeout,
             rate_limiter=self._rate_limiter,
         )
+
+    def request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        if params is None:
+            params = {}
+        method = "POST" if body is not None else "GET"
+        endpoint = path
+        if isinstance(path, str) and " " in path:
+            candidate_method, candidate_endpoint = path.split(" ", 1)
+            if candidate_method.upper() in {"GET", "POST", "PUT", "DELETE"}:
+                method = candidate_method.upper()
+                endpoint = candidate_endpoint
+        payload = body or ""
+        headers = self._build_auth_headers(method, endpoint, payload)
+        url = f"{self._params.rest_url}{endpoint}"
+        if method in {"GET", "DELETE"} and params:
+            url = f"{url}?{urlencode(params)}"
+        extra_data = extra_data or {}
+        response = self.http_request(method, url, headers, body if method not in {"GET", "DELETE"} else None, timeout)
+        return RequestData(response, extra_data)
+
+    async def async_request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        if params is None:
+            params = {}
+        method = "POST" if body is not None else "GET"
+        endpoint = path
+        if isinstance(path, str) and " " in path:
+            candidate_method, candidate_endpoint = path.split(" ", 1)
+            if candidate_method.upper() in {"GET", "POST", "PUT", "DELETE"}:
+                method = candidate_method.upper()
+                endpoint = candidate_endpoint
+        payload = body or ""
+        headers = self._build_auth_headers(method, endpoint, payload)
+        url = f"{self._params.rest_url}{endpoint}"
+        if method in {"GET", "DELETE"} and params:
+            url = f"{url}?{urlencode(params)}"
+        extra_data = extra_data or {}
+        response = await self.async_http_request(
+            method,
+            url,
+            headers,
+            body if method not in {"GET", "DELETE"} else None,
+            timeout,
+        )
+        return RequestData(response, extra_data)
 
     def async_callback(self, response, extra_data=None):
         return response

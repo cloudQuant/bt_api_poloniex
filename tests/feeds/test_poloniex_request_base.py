@@ -1,6 +1,8 @@
 from unittest.mock import AsyncMock
+
 import pytest
 from bt_api_base.containers.requestdatas.request_data import RequestData
+
 from bt_api_poloniex.feeds.live_poloniex import PoloniexRequestData
 
 
@@ -10,6 +12,7 @@ def test_poloniex_defaults_exchange_name() -> None:
     assert request_data.exchange_name == "POLONIEX"
 
 
+@pytest.mark.asyncio
 async def test_poloniex_async_request_allows_missing_extra_data(monkeypatch) -> None:
     request_data = PoloniexRequestData(
         public_key="public-key",

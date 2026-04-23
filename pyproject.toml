@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bt_api_poloniex"
@@ -52,14 +52,28 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cloudQuant/bt_api_poloniex"
 Repository = "https://github.com/cloudQuant/bt_api_poloniex"
 Documentation = "https://bt-api-poloniex.readthedocs.io/"
 Issues = "https://github.com/cloudQuant/bt_api_poloniex/issues"
 Changelog = "https://github.com/cloudQuant/bt_api_poloniex/blob/master/CHANGELOG.md"
+Homepage = "https://github.com/cloudQuant/bt_api_poloniex"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/bt_api_poloniex"]
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "network: Tests requiring network access",
+    "kline: Kline/bar data tests",
+    "orderbook: Orderbook/depth data tests",
+    "ticker: Public ticker data tests",
+    "public_trade: Public trade data tests",
+    "auth_account: Authenticated account data tests",
+    "auth_order: Authenticated order tests",
+    "auth_position: Authenticated position tests",
+]
 
 [tool.ruff]
 line-length = 100
@@ -101,6 +115,17 @@ ignore = [
     "S101",
     "F401",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+"examples/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+"scripts/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.mypy]
 python_version = "3.9"
