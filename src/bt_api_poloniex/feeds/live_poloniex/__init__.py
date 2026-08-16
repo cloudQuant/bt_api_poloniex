@@ -13,10 +13,10 @@ from bt_api_base.feeds.feed import Feed
 from bt_api_base.logging_factory import get_logger
 from bt_api_base.rate_limiter import RateLimiter, RateLimitRule
 
-from bt_api_poloniex.exchange_data import PoloniexExchangeDataSpot
-from bt_api_poloniex.tickers import PoloniexRequestTickerData, PoloniexWssTickerData
 from bt_api_poloniex.containers.balances import PoloniexRequestBalanceData
 from bt_api_poloniex.containers.orders import PoloniexRequestOrderData
+from bt_api_poloniex.exchange_data import PoloniexExchangeDataSpot
+from bt_api_poloniex.tickers import PoloniexRequestTickerData, PoloniexWssTickerData
 
 
 class PoloniexRequestData(Feed, RequestData):
@@ -58,12 +58,20 @@ class PoloniexRequestData(Feed, RequestData):
         return RateLimiter(
             rules=[
                 RateLimitRule(
-                    name="poloniex_public", type="request_count", interval=1, limit=200, scope="ip"
+                    name="poloniex_public",
+                    type="request_count",
+                    interval=1,
+                    limit=200,
+                    scope="ip",
                 ),
                 RateLimitRule(
-                    name="poloniex_private", type="request_count", interval=1, limit=50, scope="ip"
+                    name="poloniex_private",
+                    type="request_count",
+                    interval=1,
+                    limit=50,
+                    scope="ip",
                 ),
-            ]
+            ],
         )
 
     def _generate_signature(self, timestamp: str, method: str, path: str, body: str = "") -> str:
@@ -71,7 +79,9 @@ class PoloniexRequestData(Feed, RequestData):
             return ""
         sign_str = f"{timestamp}{method}{path}{body}"
         signature = hmac.new(
-            self.private_key.encode(), sign_str.encode(), hashlib.sha256
+            self.private_key.encode(),
+            sign_str.encode(),
+            hashlib.sha256,
         ).hexdigest()
         return signature
 
@@ -94,37 +104,71 @@ class PoloniexRequestData(Feed, RequestData):
             return input_data, True
         return [], False
 
-    def request(self, path, params=None, body=None, extra_data=None, timeout=10):
-        """request method"""
-        if params is None:
-            params = {}
-        headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
-        url = f"{self._params.rest_url}{path}"
+    def http_request(self, method, url, headers=None, body=None, timeout=10):
         return self._http_client.request(
-            "GET" if body is None else "POST",
+            method,
             url,
-            params=params,
-            json=body,
             headers=headers,
+            json_data=body,
             timeout=timeout,
             rate_limiter=self._rate_limiter,
         )
 
-    def async_request(self, path, params=None, body=None, extra_data=None, timeout=10):
-        """async_request method"""
-        if params is None:
-            params = {}
-        headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
-        url = f"{self._params.rest_url}{path}"
-        return self._http_client.async_request(
-            "GET" if body is None else "POST",
+    async def async_http_request(self, method, url, headers=None, body=None, timeout=10):
+        return await self._http_client.async_request(
+            method,
             url,
-            params=params,
-            json=body,
             headers=headers,
+            json_data=body,
             timeout=timeout,
             rate_limiter=self._rate_limiter,
         )
+
+    def request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        """request method"""
+        if params is None:
+            params = {}
+        method = "POST" if body is not None else "GET"
+        endpoint = path
+        if isinstance(path, str) and " " in path:
+            candidate_method, candidate_endpoint = path.split(" ", 1)
+            if candidate_method.upper() in {"GET", "POST", "PUT", "DELETE"}:
+                method = candidate_method.upper()
+                endpoint = candidate_endpoint
+        payload = body or ""
+        headers = self._build_auth_headers(method, endpoint, payload)
+        url = f"{self._params.rest_url}{endpoint}"
+        if method in {"GET", "DELETE"} and params:
+            url = f"{url}?{urlencode(params)}"
+        extra_data = extra_data or {}
+        response = self.http_request(method, url, headers, body if method not in {"GET", "DELETE"} else None, timeout)
+        return RequestData(response, extra_data)
+
+    async def async_request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        """async_request method"""
+        if params is None:
+            params = {}
+        method = "POST" if body is not None else "GET"
+        endpoint = path
+        if isinstance(path, str) and " " in path:
+            candidate_method, candidate_endpoint = path.split(" ", 1)
+            if candidate_method.upper() in {"GET", "POST", "PUT", "DELETE"}:
+                method = candidate_method.upper()
+                endpoint = candidate_endpoint
+        payload = body or ""
+        headers = self._build_auth_headers(method, endpoint, payload)
+        url = f"{self._params.rest_url}{endpoint}"
+        if method in {"GET", "DELETE"} and params:
+            url = f"{url}?{urlencode(params)}"
+        extra_data = extra_data or {}
+        response = await self.async_http_request(
+            method,
+            url,
+            headers,
+            body if method not in {"GET", "DELETE"} else None,
+            timeout,
+        )
+        return RequestData(response, extra_data)
 
     def async_callback(self, response, extra_data=None):
         """async_callback method"""

@@ -1,14 +1,136 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bt_api_poloniex"
-version = "0.1.0"
-description = "Poloniex exchange plugin for bt_api"
+version = "0.1.1"
+description = "Poloniex exchange plugin for bt_api framework - US-based cryptocurrency exchange"
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = ["bt_api_base>=0.1.0"]
+license = { text = "MIT" }
+authors = [
+    { name = "cloudQuant", email = "yunjinqi@gmail.com" }
+]
+keywords = [
+    "bt_api",
+    "poloniex",
+    "cryptocurrency",
+    "exchange",
+    "trading",
+    "algorithmic-trading",
+    "crypto",
+    "us-based"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "bt_api_base>=0.15",
+]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/bt_api_poloniex"]
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/cloudQuant/bt_api_poloniex"
+Documentation = "https://bt-api-poloniex.readthedocs.io/"
+Issues = "https://github.com/cloudQuant/bt_api_poloniex/issues"
+Changelog = "https://github.com/cloudQuant/bt_api_poloniex/blob/master/CHANGELOG.md"
+Homepage = "https://github.com/cloudQuant/bt_api_poloniex"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "network: Tests requiring network access",
+    "kline: Kline/bar data tests",
+    "orderbook: Orderbook/depth data tests",
+    "ticker: Public ticker data tests",
+    "public_trade: Public trade data tests",
+    "auth_account: Authenticated account data tests",
+    "auth_order: Authenticated order tests",
+    "auth_position: Authenticated position tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "UP",
+    "B",
+    "C4",
+    "T20",
+    "YTT",
+    "ASYNC",
+    "BLE",
+    "COM",
+    "DTZ",
+    "EM",
+    "ISC",
+    "ICN",
+    "G",
+    "PIE",
+    "T10",
+    "DJ",
+    "S",
+    "N",
+    "RUF100",
+    "PERF",
+    "PIE790",
+]
+ignore = [
+    "E501",
+    "B008",
+    "N802",
+    "N803",
+    "S101",
+    "F401",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+"examples/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+"scripts/**" = ["S106", "S105", "S311", "E402", "PERF401", "N806", "S108"]
+
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
