@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -16,6 +17,7 @@ def _poloniex_spot_subscribe_handler(
 
 
 def register_poloniex(registry: type[ExchangeRegistry]) -> None:
+    """register_poloniex function"""
     registry.register_feed("POLONIEX___SPOT", PoloniexRequestDataSpot)
     registry.register_exchange_data("POLONIEX___SPOT", PoloniexExchangeDataSpot)
     registry.register_balance_handler("POLONIEX___SPOT", _poloniex_balance_handler)

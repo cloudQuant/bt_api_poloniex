@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 import hashlib
@@ -19,6 +20,7 @@ from bt_api_poloniex.containers.orders import PoloniexRequestOrderData
 
 
 class PoloniexRequestData(Feed, RequestData):
+    """Class PoloniexRequestData"""
     @classmethod
     def _capabilities(cls) -> set[Capability]:
         return {
@@ -37,6 +39,7 @@ class PoloniexRequestData(Feed, RequestData):
         }
 
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue, **kwargs)
         self.public_key = kwargs.get("public_key") or kwargs.get("api_key")
         self.private_key = (
@@ -92,6 +95,7 @@ class PoloniexRequestData(Feed, RequestData):
         return [], False
 
     def request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        """request method"""
         if params is None:
             params = {}
         headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
@@ -107,6 +111,7 @@ class PoloniexRequestData(Feed, RequestData):
         )
 
     def async_request(self, path, params=None, body=None, extra_data=None, timeout=10):
+        """async_request method"""
         if params is None:
             params = {}
         headers = self._build_auth_headers("GET" if body is None else "POST", path, body or "")
@@ -122,4 +127,5 @@ class PoloniexRequestData(Feed, RequestData):
         )
 
     def async_callback(self, response, extra_data=None):
+        """async_callback method"""
         return response

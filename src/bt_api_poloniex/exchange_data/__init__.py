@@ -1,10 +1,13 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from bt_api_base.containers.exchanges.exchange_data import ExchangeData
 
 
 class PoloniexExchangeData(ExchangeData):
+    """Class PoloniexExchangeData"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__()
         self.exchange_name = "poloniex"
         self.rest_url = "https://api.poloniex.com"
@@ -32,6 +35,7 @@ class PoloniexExchangeData(ExchangeData):
         self.legal_currency = ["USDT", "USD", "BTC", "ETH"]
 
     def get_symbol(self, symbol: str) -> str:
+        """get_symbol method"""
         symbol = symbol.upper().replace("/", "_").replace("-", "_")
         if "_" in symbol:
             return symbol
@@ -41,6 +45,7 @@ class PoloniexExchangeData(ExchangeData):
         return symbol
 
     def account_wss_symbol(self, symbol: str) -> str:
+        """account_wss_symbol method"""
         for lc in self.legal_currency:
             if lc in symbol:
                 symbol = f"{symbol.split(lc)[0]}/{lc}".lower()
@@ -48,9 +53,11 @@ class PoloniexExchangeData(ExchangeData):
         return symbol
 
     def get_period(self, key: str) -> str:
+        """get_period method"""
         return self.kline_periods.get(key, key)
 
     def get_rest_path(self, request_type: str, **kwargs) -> str:
+        """get_rest_path method"""
         path = self.rest_paths.get(request_type)
         if path is None:
             raise ValueError(f"Unknown rest path: {request_type}")
@@ -58,7 +65,9 @@ class PoloniexExchangeData(ExchangeData):
 
 
 class PoloniexExchangeDataSpot(PoloniexExchangeData):
+    """Class PoloniexExchangeDataSpot"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__()
         self.exchange_name = "POLONIEX___SPOT"
         self.asset_type = "SPOT"
@@ -135,15 +144,19 @@ class PoloniexExchangeDataSpot(PoloniexExchangeData):
         self.timezone = "UTC"
 
     def get_symbol_path(self, symbol: str) -> str:
+        """get_symbol_path method"""
         return symbol.replace("/", "_")
 
     def get_instrument_name(self, symbol: str) -> str:
+        """get_instrument_name method"""
         return symbol.replace("/", "_")
 
     def get_symbol_from_instrument(self, instrument_name: str) -> str:
+        """get_symbol_from_instrument method"""
         return instrument_name.replace("_", "/")
 
     def validate_symbol(self, symbol: str) -> bool:
+        """validate_symbol method"""
         if not symbol:
             return False
         if "_" in symbol:
@@ -152,10 +165,13 @@ class PoloniexExchangeDataSpot(PoloniexExchangeData):
         return True
 
     def get_depth_levels(self, depth: int = 50) -> int:
+        """get_depth_levels method"""
         return min(max(1, depth), 50)
 
     def get_kline_period(self, period: str) -> str:
+        """get_kline_period method"""
         return self.kline_periods.get(period, period)
 
     def get_period_from_kline(self, kline_period: str) -> str:
+        """get_period_from_kline method"""
         return self.reverse_kline_periods.get(kline_period, kline_period)

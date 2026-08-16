@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 import json
@@ -9,6 +10,7 @@ from bt_api_base.functions.utils import from_dict_get_float, from_dict_get_int, 
 
 
 class PoloniexOrderData(OrderData):
+    """Class PoloniexOrderData"""
     def __init__(
         self,
         order_info: Any,
@@ -16,6 +18,7 @@ class PoloniexOrderData(OrderData):
         asset_type: str = "SPOT",
         has_been_json_encoded: bool = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(order_info, has_been_json_encoded)
         self.exchange_name = "POLONIEX"
         self.local_update_time = time.time()
@@ -38,9 +41,11 @@ class PoloniexOrderData(OrderData):
         self.has_been_init_data = False
 
     def init_data(self) -> None:
+        """init_data method"""
         raise NotImplementedError
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         if self.all_data is None:
             status_val: str | None = None
             if self.order_status is not None:
@@ -73,56 +78,74 @@ class PoloniexOrderData(OrderData):
         return self.__str__()
 
     def get_exchange_name(self) -> str:
+        """get_exchange_name method"""
         return self.exchange_name
 
     def get_local_update_time(self) -> float:
+        """get_local_update_time method"""
         return self.local_update_time
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.symbol_name)
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_order_id(self) -> Any:
+        """get_order_id method"""
         return self.order_id
 
     def get_client_order_id(self) -> Any:
+        """get_client_order_id method"""
         return self.client_order_id
 
     def get_symbol(self) -> Any:
+        """get_symbol method"""
         return self.symbol
 
     def get_order_side(self) -> Any:
+        """get_order_side method"""
         return self.order_side
 
     def get_order_type(self) -> Any:
+        """get_order_type method"""
         return self.order_type
 
     def get_order_price(self) -> Any:
+        """get_order_price method"""
         return self.order_price
 
     def get_order_qty(self) -> Any:
+        """get_order_qty method"""
         return self.order_qty
 
     def get_order_filled_qty(self) -> Any:
+        """get_order_filled_qty method"""
         return self.order_filled_qty
 
     def get_order_avg_price(self) -> Any:
+        """get_order_avg_price method"""
         return self.order_avg_price
 
     def get_order_status(self) -> Any:
+        """get_order_status method"""
         return self.order_status
 
     def get_order_time(self) -> Any:
+        """get_order_time method"""
         return self.order_time
 
     def get_update_time(self) -> Any:
+        """get_update_time method"""
         return self.update_time
 
 
 class PoloniexRequestOrderData(PoloniexOrderData):
+    """Class PoloniexRequestOrderData"""
     def init_data(self) -> None:
+        """init_data method"""
         if not self.has_been_json_encoded:
             self.order_data = (
                 json.loads(self.order_info) if isinstance(self.order_info, str) else self.order_info
@@ -158,7 +181,9 @@ class PoloniexRequestOrderData(PoloniexOrderData):
 
 
 class PoloniexWssOrderData(PoloniexOrderData):
+    """Class PoloniexWssOrderData"""
     def init_data(self) -> None:
+        """init_data method"""
         if not self.has_been_json_encoded:
             self.order_data = (
                 json.loads(self.order_info) if isinstance(self.order_info, str) else self.order_info

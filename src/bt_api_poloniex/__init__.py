@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from bt_api_poloniex.exchange_data import PoloniexExchangeData, PoloniexExchangeDataSpot
 from bt_api_poloniex.errors import PoloniexErrorTranslator
 from bt_api_poloniex.tickers import (

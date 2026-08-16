@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 import json
@@ -9,6 +10,7 @@ from bt_api_base.functions.utils import from_dict_get_float, from_dict_get_strin
 
 
 class PoloniexBalanceData(BalanceData):
+    """Class PoloniexBalanceData"""
     def __init__(
         self,
         balance_info: Any,
@@ -16,6 +18,7 @@ class PoloniexBalanceData(BalanceData):
         asset_type: str = "SPOT",
         has_been_json_encoded: bool = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(balance_info, has_been_json_encoded)
         self.exchange_name = "POLONIEX"
         self.local_update_time = time.time()
@@ -30,9 +33,11 @@ class PoloniexBalanceData(BalanceData):
         self.has_been_init_data = False
 
     def init_data(self) -> None:
+        """init_data method"""
         raise NotImplementedError
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         if self.all_data is None:
             self.all_data = {
                 "exchange_name": self.exchange_name,
@@ -54,37 +59,47 @@ class PoloniexBalanceData(BalanceData):
         return self.__str__()
 
     def get_exchange_name(self) -> str:
+        """get_exchange_name method"""
         return str(self.exchange_name)
 
     def get_local_update_time(self) -> float:
+        """get_local_update_time method"""
         return float(self.local_update_time)
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.symbol_name)
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return self.asset_type
 
     def get_currency(self) -> str:
+        """get_currency method"""
         return str(self.currency) if self.currency is not None else ""
 
     def get_available_balance(self) -> Any:
+        """get_available_balance method"""
         return self.available_balance
 
     def get_locked_balance(self) -> Any:
+        """get_locked_balance method"""
         return self.locked_balance
 
     def get_total_balance(self) -> Any:
+        """get_total_balance method"""
         return self.total_balance
 
 
 class PoloniexRequestBalanceData(PoloniexBalanceData):
+    """Class PoloniexRequestBalanceData"""
     def init_data(self) -> None:
+        """init_data method"""
         if not self.has_been_json_encoded:
             if isinstance(self.balance_info, list) and len(self.balance_info) > 0:
                 self.balance_data = self.balance_info[0]
             else:
-                self.balance_data = (
+                    self.balance_data = (
                     json.loads(self.balance_info)
                     if isinstance(self.balance_info, str)
                     else self.balance_info
@@ -104,7 +119,9 @@ class PoloniexRequestBalanceData(PoloniexBalanceData):
 
 
 class PoloniexWssBalanceData(PoloniexBalanceData):
+    """Class PoloniexWssBalanceData"""
     def init_data(self) -> None:
+        """init_data method"""
         if not self.has_been_json_encoded:
             self.balance_data = (
                 json.loads(self.balance_info)

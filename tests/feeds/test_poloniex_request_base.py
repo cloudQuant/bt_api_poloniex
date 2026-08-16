@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from unittest.mock import AsyncMock
 import pytest
 from bt_api_base.containers.requestdatas.request_data import RequestData
@@ -5,12 +6,14 @@ from bt_api_poloniex.feeds.live_poloniex import PoloniexRequestData
 
 
 def test_poloniex_defaults_exchange_name() -> None:
+    """test_poloniex_defaults_exchange_name function"""
     request_data = PoloniexRequestData(public_key="public-key", private_key="secret-key")
 
     assert request_data.exchange_name == "POLONIEX"
 
 
 async def test_poloniex_async_request_allows_missing_extra_data(monkeypatch) -> None:
+    """test_poloniex_async_request_allows_missing_extra_data function"""
     request_data = PoloniexRequestData(
         public_key="public-key",
         private_key="secret-key",
