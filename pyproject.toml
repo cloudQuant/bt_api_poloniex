@@ -134,3 +134,6 @@ ignore_missing_imports = true
 warn_unused_configs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
+
+[project.entry-points."bt_api.plugins"]
+poloniex = "bt_api_poloniex.plugin:register_plugin"
